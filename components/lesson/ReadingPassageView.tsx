@@ -2,13 +2,22 @@
 
 import { useState } from "react";
 import type { ReadingPassage } from "@/lib/lessons/types";
-import { speakLt } from "@/lib/tts";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { AUDIO_MANIFEST } from "@/lib/generated/audio-manifest";
+import { readingFullSrc } from "@/lib/lesson-audio-paths";
 
-export function ReadingPassageView({ passage }: { passage: ReadingPassage }) {
+export function ReadingPassageView({
+  lessonSlug,
+  passage,
+}: {
+  lessonSlug: string;
+  passage: ReadingPassage;
+}) {
   const [showRu, setShowRu] = useState(false);
   const [picked, setPicked] = useState<Record<number, number | null>>({});
+  const readSrc = readingFullSrc(lessonSlug);
 
   return (
     <div className="space-y-4">
@@ -16,9 +25,11 @@ export function ReadingPassageView({ passage }: { passage: ReadingPassage }) {
         <Button variant={showRu ? "primary" : "secondary"} onClick={() => setShowRu((s) => !s)}>
           {showRu ? "Скрыть перевод" : "Показать перевод"}
         </Button>
-        <Button variant="secondary" onClick={() => speakLt(passage.lt)}>
-          Прослушать текст
-        </Button>
+        {AUDIO_MANIFEST.has(readSrc) ? (
+          <AudioPlayButton src={readSrc} variant="secondary">
+            Прослушать текст
+          </AudioPlayButton>
+        ) : null}
       </div>
       <Card>
         <p className="whitespace-pre-wrap text-lg leading-relaxed text-[var(--text)]">{passage.lt}</p>
@@ -30,10 +41,10 @@ export function ReadingPassageView({ passage }: { passage: ReadingPassage }) {
           <div key={qi} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4">
             <p className="font-medium text-[var(--text)]">{qq.q}</p>
             <div className="mt-2 grid gap-2">
-                {qq.choices.map((c, ci) => {
-                  const chosen = picked[qi];
-                  const show = typeof chosen === "number";
-                  const isCorrect = ci === qq.answerIndex;
+              {qq.choices.map((c, ci) => {
+                const chosen = picked[qi];
+                const show = typeof chosen === "number";
+                const isCorrect = ci === qq.answerIndex;
                 return (
                   <button
                     key={ci}

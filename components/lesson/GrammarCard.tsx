@@ -3,11 +3,12 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { GrammarTopic } from "@/lib/lessons/types";
-import { speakLt } from "@/lib/tts";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { AUDIO_MANIFEST } from "@/lib/generated/audio-manifest";
+import { grammarExampleSrc } from "@/lib/lesson-audio-paths";
 
-export function GrammarCard({ topics }: { topics: GrammarTopic[] }) {
+export function GrammarCard({ lessonSlug, topics }: { lessonSlug: string; topics: GrammarTopic[] }) {
   return (
     <div className="space-y-6">
       {topics.map((t) => (
@@ -22,19 +23,31 @@ export function GrammarCard({ topics }: { topics: GrammarTopic[] }) {
             ) : null}
             <div className="mt-4 space-y-2">
               <div className="text-xs font-semibold text-[var(--muted)]">Примеры (нажмите, чтобы услышать)</div>
-              {t.examples.map((ex, i) => (
-                <div key={i} className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3">
-                  <div>
-                    <button type="button" className="text-left font-medium text-[var(--text)]" onClick={() => speakLt(ex.lt)}>
-                      {ex.lt}
-                    </button>
-                    <p className="text-sm text-[var(--muted)]">{ex.ru}</p>
+              {t.examples.map((ex, i) => {
+                const src = grammarExampleSrc(lessonSlug, t.id, i);
+                return (
+                  <div
+                    key={i}
+                    className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3"
+                  >
+                    <div>
+                      {AUDIO_MANIFEST.has(src) ? (
+                        <AudioPlayButton asText src={src} textClassName="font-medium">
+                          {ex.lt}
+                        </AudioPlayButton>
+                      ) : (
+                        <p className="font-medium text-[var(--text)]">{ex.lt}</p>
+                      )}
+                      <p className="text-sm text-[var(--muted)]">{ex.ru}</p>
+                    </div>
+                    {AUDIO_MANIFEST.has(src) ? (
+                      <AudioPlayButton src={src} variant="secondary">
+                        Слушать
+                      </AudioPlayButton>
+                    ) : null}
                   </div>
-                  <Button variant="secondary" onClick={() => speakLt(ex.lt)}>
-                    Слушать
-                  </Button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </Card>

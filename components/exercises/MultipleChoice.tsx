@@ -3,14 +3,20 @@
 import { useState } from "react";
 import type { McQuestion } from "@/lib/lessons/types";
 import { Button } from "@/components/ui/Button";
-import { speakLt } from "@/lib/tts";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { AUDIO_MANIFEST } from "@/lib/generated/audio-manifest";
+import { exerciseMcSrc } from "@/lib/lesson-audio-paths";
 
 export function MultipleChoice({
+  lessonSlug,
+  blockIdx,
   promptRu,
   questions,
   onComplete,
   onFinished,
 }: {
+  lessonSlug: string;
+  blockIdx: number;
   promptRu: string;
   questions: McQuestion[];
   onComplete?: (correct: number, total: number) => void;
@@ -64,6 +70,8 @@ export function MultipleChoice({
     setPicked(null);
   }
 
+  const mcSrc = exerciseMcSrc(lessonSlug, blockIdx, idx);
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-[var(--muted)]">{promptRu}</p>
@@ -73,9 +81,11 @@ export function MultipleChoice({
       <div className="rounded-lg border border-[var(--border)] bg-[var(--bg)] p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-lg font-medium text-[var(--text)]">{q.lt}</p>
-          <Button variant="secondary" onClick={() => speakLt(q.lt)}>
-            Слушать
-          </Button>
+          {AUDIO_MANIFEST.has(mcSrc) ? (
+            <AudioPlayButton key={idx} src={mcSrc} variant="secondary">
+              Слушать
+            </AudioPlayButton>
+          ) : null}
         </div>
         <div className="mt-3 grid gap-2">
           {q.choices.map((c, i) => {

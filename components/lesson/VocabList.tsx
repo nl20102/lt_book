@@ -2,16 +2,17 @@
 
 import { useMemo, useState } from "react";
 import type { VocabItem } from "@/lib/lessons/types";
-import { speakLt } from "@/lib/tts";
-import { Button } from "@/components/ui/Button";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { vocabItemSrc } from "@/lib/lesson-audio-paths";
 
-export function VocabList({ items }: { items: VocabItem[] }) {
+export function VocabList({ lessonSlug, items }: { lessonSlug: string; items: VocabItem[] }) {
   const [q, setQ] = useState("");
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return items;
-    return items.filter(
-      (v) =>
+    const withIdx = items.map((v, origIdx) => ({ v, origIdx }));
+    if (!s) return withIdx;
+    return withIdx.filter(
+      ({ v }) =>
         v.lt.toLowerCase().includes(s) ||
         v.ru.toLowerCase().includes(s) ||
         (v.pos && v.pos.toLowerCase().includes(s)),
@@ -37,8 +38,8 @@ export function VocabList({ items }: { items: VocabItem[] }) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((v, i) => (
-              <tr key={`${v.lt}-${i}`} className="border-t border-[var(--border)]">
+            {filtered.map(({ v, origIdx }) => (
+              <tr key={`${v.lt}-${origIdx}`} className="border-t border-[var(--border)]">
                 <td className="px-3 py-2 font-medium text-[var(--text)]">{v.lt}</td>
                 <td className="px-3 py-2 text-[var(--muted)]">{v.ru}</td>
                 <td className="px-3 py-2 text-xs text-[var(--muted)]">
@@ -51,9 +52,9 @@ export function VocabList({ items }: { items: VocabItem[] }) {
                   ) : null}
                 </td>
                 <td className="px-3 py-2 text-right">
-                  <Button variant="secondary" onClick={() => speakLt(v.lt)}>
+                  <AudioPlayButton src={vocabItemSrc(lessonSlug, origIdx)} variant="secondary">
                     ▶
-                  </Button>
+                  </AudioPlayButton>
                 </td>
               </tr>
             ))}

@@ -33,16 +33,24 @@ export function LessonSectionBody({ lesson, section }: { lesson: Lesson; section
 
   return (
     <div>
-      {section === "dialogues" ? <DialogueViewer dialogues={lesson.dialogues} /> : null}
-      {section === "vocabulary" ? <VocabList items={lesson.vocabulary} /> : null}
-      {section === "grammar" ? <GrammarCard topics={lesson.grammar} /> : null}
+      {section === "dialogues" ? <DialogueViewer lessonSlug={lesson.slug} dialogues={lesson.dialogues} /> : null}
+      {section === "vocabulary" ? <VocabList lessonSlug={lesson.slug} items={lesson.vocabulary} /> : null}
+      {section === "grammar" ? <GrammarCard lessonSlug={lesson.slug} topics={lesson.grammar} /> : null}
       {section === "exercises" ? (
-        <ExerciseSectionRunner exercises={lesson.exercises} onAllBlocksDone={() => markSectionComplete(lesson.slug, "exercises")} />
+        <ExerciseSectionRunner
+          lessonSlug={lesson.slug}
+          exercises={lesson.exercises}
+          onAllBlocksDone={() => markSectionComplete(lesson.slug, "exercises")}
+        />
       ) : null}
       {section === "listening" ? (
-        <ListeningPlayer items={lesson.listening} questions={lesson.listeningQuestions} />
+        <ListeningPlayer
+          lessonSlug={lesson.slug}
+          items={lesson.listening}
+          questions={lesson.listeningQuestions}
+        />
       ) : null}
-      {section === "reading" ? <ReadingPassageView passage={lesson.reading} /> : null}
+      {section === "reading" ? <ReadingPassageView lessonSlug={lesson.slug} passage={lesson.reading} /> : null}
       <MarkSectionComplete lessonSlug={lesson.slug} section={section} />
     </div>
   );

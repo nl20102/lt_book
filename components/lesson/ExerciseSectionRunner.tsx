@@ -9,9 +9,11 @@ import { MatchPairs } from "@/components/exercises/MatchPairs";
 import { WordOrder } from "@/components/exercises/WordOrder";
 
 export function ExerciseSectionRunner({
+  lessonSlug,
   exercises,
   onAllBlocksDone,
 }: {
+  lessonSlug: string;
   exercises: Exercise[];
   onAllBlocksDone?: () => void;
 }) {
@@ -36,10 +38,16 @@ export function ExerciseSectionRunner({
         Блок {idx + 1} из {exercises.length}
       </p>
       {ex.kind === "flashcards" ? (
-        <Flashcards items={ex.items} onFinished={advance} />
+        <Flashcards lessonSlug={lessonSlug} blockIdx={idx} items={ex.items} onFinished={advance} />
       ) : null}
       {ex.kind === "multipleChoice" ? (
-        <MultipleChoice promptRu={ex.promptRu} questions={ex.questions} onFinished={advance} />
+        <MultipleChoice
+          lessonSlug={lessonSlug}
+          blockIdx={idx}
+          promptRu={ex.promptRu}
+          questions={ex.questions}
+          onFinished={advance}
+        />
       ) : null}
       {ex.kind === "fillBlank" ? (
         <FillBlank promptRu={ex.promptRu} questions={ex.questions} onFinished={advance} />

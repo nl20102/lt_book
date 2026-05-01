@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import type { Dialogue } from "@/lib/lessons/types";
-import { speakLt } from "@/lib/tts";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { AUDIO_MANIFEST } from "@/lib/generated/audio-manifest";
+import { listeningLineSrc } from "@/lib/lesson-audio-paths";
 
 export function ListeningPlayer({
+  lessonSlug,
   items,
   questions,
 }: {
+  lessonSlug: string;
   items: Dialogue[];
   questions?: { q: string; choices: string[]; answerIndex: number }[];
 }) {
@@ -23,11 +27,7 @@ export function ListeningPlayer({
   }
 
   const line = main.lines[lineIdx];
-
-  function playLine() {
-    if (!line) return;
-    speakLt(line.lt);
-  }
+  const lineSrc = line ? listeningLineSrc(lessonSlug, main.id, lineIdx) : "";
 
   function nextLine() {
     if (lineIdx + 1 >= main.lines.length) {
@@ -42,7 +42,11 @@ export function ListeningPlayer({
       <Card title={<span>Аудирование: {main.title.ru}</span>}>
         <p className="mb-4 text-sm text-[var(--muted)]">{main.title.lt}</p>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={playLine}>Воспроизвести строку</Button>
+          {line && AUDIO_MANIFEST.has(lineSrc) ? (
+            <AudioPlayButton key={lineIdx} src={lineSrc} variant="primary">
+              Воспроизвести строку
+            </AudioPlayButton>
+          ) : null}
           <Button variant="secondary" onClick={nextLine}>
             Следующая строка ({lineIdx + 1}/{main.lines.length})
           </Button>

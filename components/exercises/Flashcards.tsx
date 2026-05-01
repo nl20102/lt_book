@@ -3,13 +3,19 @@
 import { useState } from "react";
 import type { VocabItem } from "@/lib/lessons/types";
 import { Button } from "@/components/ui/Button";
-import { speakLt } from "@/lib/tts";
+import { AudioPlayButton } from "@/components/AudioPlayButton";
+import { AUDIO_MANIFEST } from "@/lib/generated/audio-manifest";
+import { exerciseFlashcardSrc } from "@/lib/lesson-audio-paths";
 
 export function Flashcards({
+  lessonSlug,
+  blockIdx,
   items,
   onComplete,
   onFinished,
 }: {
+  lessonSlug: string;
+  blockIdx: number;
   items: VocabItem[];
   onComplete?: (correct: number, total: number) => void;
   onFinished?: () => void;
@@ -35,34 +41,39 @@ export function Flashcards({
     setFlipped(false);
   }
 
+  const fcSrc = exerciseFlashcardSrc(lessonSlug, blockIdx, i);
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-[var(--muted)]">
         Карточка {i + 1} / {total}
       </p>
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setFlipped(!flipped)}
-        className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] p-6 text-left transition hover:border-[var(--accent)]/40"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setFlipped(!flipped);
+          }
+        }}
+        className="w-full cursor-pointer rounded-xl border border-[var(--border)] bg-[var(--bg)] p-6 text-left transition hover:border-[var(--accent)]/40"
       >
         <div className="text-xs text-[var(--muted)]">{flipped ? "RU" : "LT"}</div>
         <div className="mt-2 text-xl font-medium text-[var(--text)]">
           {flipped ? cur.ru : cur.lt}
         </div>
         {!flipped ? (
-          <div className="mt-4">
-            <Button
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                speakLt(cur.lt);
-              }}
-            >
-              Прослушать (LT)
-            </Button>
+          <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+            {AUDIO_MANIFEST.has(fcSrc) ? (
+              <AudioPlayButton src={fcSrc} variant="secondary">
+                Прослушать (LT)
+              </AudioPlayButton>
+            ) : null}
           </div>
         ) : null}
-      </button>
+      </div>
       <div className="flex flex-wrap gap-2">
         <Button onClick={advance}>{i < total - 1 ? "Дальше" : "Завершить"}</Button>
         <Button variant="ghost" onClick={() => (onComplete?.(i + 1, total), onFinished?.())}>
