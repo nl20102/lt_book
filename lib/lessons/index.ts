@@ -1,10 +1,10 @@
 import { lesson01 } from "@/lib/lessons/lesson-01";
 import { lesson02 } from "@/lib/lessons/lesson-02";
 import { lesson03 } from "@/lib/lessons/lesson-03";
+import { lesson04 } from "@/lib/lessons/lesson-04";
+import { lesson05 } from "@/lib/lessons/lesson-05";
+import { lesson06 } from "@/lib/lessons/lesson-06";
 import {
-  lesson04,
-  lesson05,
-  lesson06,
   lesson07,
   lesson08,
   lesson09,
