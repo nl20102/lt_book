@@ -4,14 +4,12 @@ import { lesson03 } from "@/lib/lessons/lesson-03";
 import { lesson04 } from "@/lib/lessons/lesson-04";
 import { lesson05 } from "@/lib/lessons/lesson-05";
 import { lesson06 } from "@/lib/lessons/lesson-06";
-import {
-  lesson07,
-  lesson08,
-  lesson09,
-  lesson10,
-  lesson11,
-  lesson12,
-} from "@/lib/lessons/lesson-04-12";
+import { lesson07 } from "@/lib/lessons/lesson-07";
+import { lesson08 } from "@/lib/lessons/lesson-08";
+import { lesson09 } from "@/lib/lessons/lesson-09";
+import { lesson10 } from "@/lib/lessons/lesson-10";
+import { lesson11 } from "@/lib/lessons/lesson-11";
+import { lesson12 } from "@/lib/lessons/lesson-12";
 import type { Lesson } from "@/lib/lessons/types";
 
 export * from "@/lib/lessons/types";
